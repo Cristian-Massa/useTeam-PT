@@ -10,13 +10,14 @@ import {
   CardTitle,
 } from "@/core/components/ui/card";
 import { LoaderPulse } from "@/core/components/ui/loader";
+import Link from "next/link";
 
 export const KanbanList = () => {
   const { kanbans, isPending, refetch } = useGetKanbans();
   if (isPending) {
     <LoaderPulse />;
   }
-
+  console.log(kanbans);
   return (
     <div>
       <div className="mb-4 flex justify-end gap-2">
@@ -26,17 +27,18 @@ export const KanbanList = () => {
       {!kanbans || kanbans.length === 0 ? (
         <div className="flex h-full flex-col items-center justify-center">
           <p className="mb-4 text-lg">No hay kanbans disponibles.</p>
-          <Button onClick={() => refetch()}>Refrescar</Button>
         </div>
       ) : (
         kanbans.map((kanban) => (
-          <Card key={kanban.id}>
+          <Card key={kanban._id}>
             <CardHeader>
-              <CardTitle>{kanban.title}</CardTitle>
+              <CardTitle>{kanban.name}</CardTitle>
             </CardHeader>
             <CardContent>
               <p>{kanban.description}</p>
-              <Button>Acceder</Button>
+              <Link href={`/dashboard/workspaces/${kanban._id}`}>
+                <Button>Acceder</Button>
+              </Link>
             </CardContent>
           </Card>
         ))

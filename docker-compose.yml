@@ -9,7 +9,7 @@ services:
       NEXT_PUBLIC_WS_URL: ${NEXT_PUBLIC_WS_URL}
     volumes:
       - ./app:/app
-      - /app/node_modules
+    command: npm run dev
 
   backend:
     build: ./backend
@@ -19,10 +19,12 @@ services:
       PORT: ${BACK_PORT}
       N8N_WEBHOOK_URL: ${N8N_WEBHOOK_URL}
       MONGODB_URI: ${MONGODB_URI}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
     working_dir: /app
     volumes:
       - ./backend:/app
-      - /app/node_modules
+    command: npm run start:dev
     depends_on:
       - db
 

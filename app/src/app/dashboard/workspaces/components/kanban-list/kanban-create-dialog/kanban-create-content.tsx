@@ -25,6 +25,7 @@ export const KanbanCreateContent = () => {
     defaultValues: {
       name: "",
       description: "",
+      password: "",
     },
   });
   const { postKanban, isPending } = usePostKanban();
@@ -65,6 +66,16 @@ export const KanbanCreateContent = () => {
                   {...field}
                   placeholder="ej. Breve descripción del kanban"
                 />
+              )}
+            />
+          </div>
+          <div className="grid gap-2">
+            <Label>Contraseña:</Label>
+            <Controller
+              control={control}
+              name="password"
+              render={({ field }) => (
+                <Input type="password" {...field} placeholder="*******" />
               )}
             />
           </div>

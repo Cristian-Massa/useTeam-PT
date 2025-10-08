@@ -5,6 +5,8 @@ import { RoomsModule } from '@app/rooms/rooms.module';
 import { KanbanModule } from '@app/kanban/kanban.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -23,6 +25,8 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
     ColumnsModule,
     RoomsModule,
     KanbanModule,
+    UsersModule,
+    AuthModule,
   ],
 })
 export class AppModule {}

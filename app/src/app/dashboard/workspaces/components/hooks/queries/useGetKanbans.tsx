@@ -10,7 +10,7 @@ export const useGetKanbans = () => {
   } = useQuery({
     queryKey: ["kanbans"],
     queryFn: async () => {
-      const response = await api<GetKanban[]>("kanbans", {
+      const response = await api<GetKanban[]>("/kanban", {
         method: "GET",
       });
 

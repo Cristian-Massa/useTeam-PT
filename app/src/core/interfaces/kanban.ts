@@ -1,12 +1,15 @@
 export interface BaseKanban {
-  title: string;
+  _id?: string;
+  name: string;
   description?: string;
 }
 
 export interface GetKanban extends BaseKanban {
-  id: string;
+  _id: string;
   createdAt: string;
   updatedAt: string;
 }
 
-export interface PostKanban extends BaseKanban {}
+export interface PostKanban extends BaseKanban {
+  password: string;
+}

@@ -7,8 +7,9 @@ export const usePostKanban = () => {
   const queryClient = useQueryClient();
   const { mutate: postKanban, isPending } = useMutation({
     mutationFn: async (data: KanbanCreateType) => {
-      const response = await api<PostKanban>("/kanbans", {
+      const response = await api<PostKanban>("/kanban", {
         method: "POST",
+        body: data,
       });
     },
     onSuccess: () => {

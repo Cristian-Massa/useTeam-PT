@@ -1,12 +1,14 @@
 #!/bin/sh
 
-# Detectar OS
 OS="$(uname -s)"
+ACTION="$1"
 
-# Comando base
-CMD="docker compose up -d --build"
+if [ "$ACTION" = "build" ]; then
+  CMD="docker compose up -d --build"
+else
+  CMD="docker compose up -d"
+fi
 
-# Si es Linux => usar sudo
 if [ "$OS" = "Linux" ]; then
   echo "Detectado Linux → usando sudo"
   sudo sh -c "$CMD"

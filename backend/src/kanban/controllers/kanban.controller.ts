@@ -20,6 +20,7 @@ export class KanbanController {
 
   @Post()
   create(@Body() createKanbanDto: CreateKanbanDto) {
+    console.log(createKanbanDto);
     return this.kanbanService.create(createKanbanDto);
   }
 
