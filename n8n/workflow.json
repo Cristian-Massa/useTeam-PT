@@ -1,0 +1,160 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "schemaType": "fromJson",
+        "jsonSchemaExample": "{\n  \"_id\": \"123e4567-e89b-12d3-a456-426614174000\",\n  \"name\": \"Diseñar la página de inicio\",\n  \"description\": \"Crear el diseño inicial de la página de inicio, incluyendo header, hero y footer.\",\n  \"column\": \"En progreso\",\n  \"createdAt\": \"2025-10-08T06:00:00Z\"\n}",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "typeVersion": 1.2,
+      "position": [256, -32],
+      "id": "d170f5e4-71de-4690-95a8-41d402e89d4a",
+      "name": "Information Extractor"
+    },
+    {
+      "parameters": {
+        "options": {
+          "fileName": "Tasks"
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [608, -32],
+      "id": "455e7ca5-6563-4da8-b6ea-5ff5aaf58edd",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin@admin.com",
+        "toEmail": "info@example.com",
+        "subject": "Tareas de app de prueba",
+        "emailFormat": "text",
+        "text": "archivo csv adjunto",
+        "options": {
+          "attachments": ""
+        }
+      },
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 2.1,
+      "position": [816, -32],
+      "id": "c2590ec7-c814-40e8-845c-d94303a4387f",
+      "name": "Send email",
+      "webhookId": "14a2fd3f-4806-4ff1-a5d4-b24b464dc86e"
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "mode": "list",
+          "value": "gpt-4.1-mini"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.2,
+      "position": [192, 176],
+      "id": "398e2afd-52f2-40eb-9c6f-0c13c45de6af",
+      "name": "OpenAI Chat Model",
+      "credentials": {
+        "openAiApi": {
+          "id": "bvlXMGE8x5C281t4",
+          "name": "OpenAi account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:3000/api/tasks",
+        "options": {}
+      },
+      "name": "Get Tasks",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [16, -48],
+      "id": "0d2584e3-5ed1-4fe1-b949-49ceb6bf9dca"
+    },
+    {
+      "parameters": {
+        "path": "kanban-export",
+        "options": {}
+      },
+      "name": "Webhook1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [-432, -176],
+      "id": "2b9c497b-f369-4170-b02b-c3746021c8b8",
+      "webhookId": "9176dd4b-07c0-4721-b197-e1627c937350"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "Send email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "OpenAI Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook1": {
+      "main": [
+        [
+          {
+            "node": "Get Tasks",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get Tasks": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f9005dc7-1195-40c5-ad41-bee359ee7789",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "63e8ed885399888372842f75b6053aa3bc297d32d491162c2446476ef7557af5"
+  },
+  "id": "Fxwofna8LhWF1Rz7",
+  "tags": []
+}

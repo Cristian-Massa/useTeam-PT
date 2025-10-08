@@ -19,13 +19,13 @@ import { getValidationError } from "@/core/lib/get-validation-error";
 import { validationErrorEmitter } from "@/core/lib/validation-error-observer";
 import { usePostKanban } from "@/app/dashboard/workspaces/components/kanban-list/kanban-create-dialog/hooks/mutations/usePostKanban";
 import { ValidationException } from "@/core/exceptions/validation-exception";
+
 export const KanbanCreateContent = () => {
   const { control, handleSubmit } = useForm<KanbanCreateType>({
     resolver: zodResolver(kanbanCreateSchema),
     defaultValues: {
       name: "",
       description: "",
-      password: "",
     },
   });
   const { postKanban, isPending } = usePostKanban();
@@ -35,7 +35,6 @@ export const KanbanCreateContent = () => {
     },
     (errors) => {
       const error = getValidationError(errors);
-      console.log(error);
       validationErrorEmitter.emit(new ValidationException(error));
     }
   );
@@ -66,16 +65,6 @@ export const KanbanCreateContent = () => {
                   {...field}
                   placeholder="ej. Breve descripción del kanban"
                 />
-              )}
-            />
-          </div>
-          <div className="grid gap-2">
-            <Label>Contraseña:</Label>
-            <Controller
-              control={control}
-              name="password"
-              render={({ field }) => (
-                <Input type="password" {...field} placeholder="*******" />
               )}
             />
           </div>

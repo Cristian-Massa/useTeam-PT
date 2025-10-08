@@ -1,6 +1,4 @@
-import { HttpException } from "@/exceptions/http-exception";
-
-type Listener= (data?: string, error?: HttpException) => void;
+type Listener = (data?: string, error?: Error) => void;
 
 class HttpNotificationEmitter {
   private listeners: Listener[] = [];
@@ -12,11 +10,11 @@ class HttpNotificationEmitter {
     };
   }
 
-  emitNotifcation(data: string){
+  emitNotifcation(data: string) {
     this.listeners.forEach((listener) => listener(data));
   }
 
-  emitError(error: HttpException) {
+  emitError(error: Error) {
     this.listeners.forEach((listener) => listener(undefined, error));
   }
 }

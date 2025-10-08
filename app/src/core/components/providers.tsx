@@ -20,7 +20,7 @@ export const Providers = ({ children }: PropsWithChildren) => {
           onError: async (error, query) => {
             if (
               (error as any)?.status === 401 ||
-              (error as any)?.cause === "AccessTokenExpired"
+              (error as any)?.cause === "access_token_expired"
             ) {
               const result = await handleTokenRefreshAndRetry(query);
               if (result?.accessToken) {
@@ -34,7 +34,7 @@ export const Providers = ({ children }: PropsWithChildren) => {
           onError: async (error, variables, context, mutation) => {
             if (
               (error as any)?.status === 401 ||
-              (error as any)?.cause === "AccessTokenExpired"
+              (error as any)?.cause === "access_token_expired"
             ) {
               const result = await handleTokenRefreshAndRetry(mutation);
 

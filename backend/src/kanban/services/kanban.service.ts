@@ -2,9 +2,10 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateKanbanDto } from '@app/kanban/dto/create-kanban.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Kanban } from '@app/kanban/shemas/kanban.schema';
-import { Model } from 'mongoose';
+import mongoose, { Model, Types } from 'mongoose';
 import { BaseKanbanDto } from '@app/kanban/dto/base-kanban.dto';
 import { BaseResponse } from '@app/shared/interfaces/base-response';
+import { objectId } from '@app/shared/libs/object-id';
 
 @Injectable()
 export class KanbanService {
@@ -14,8 +15,9 @@ export class KanbanService {
 
   async create(
     createKanbanDto: CreateKanbanDto,
+    userId: string,
   ): Promise<BaseResponse<Kanban>> {
-    const kanban = new this.kanbanModel(createKanbanDto);
+    const kanban = new this.kanbanModel({ ...createKanbanDto, owner: userId });
     await kanban.save();
 
     return {
@@ -66,7 +68,7 @@ export class KanbanService {
     };
   }
 
-  async remove(id: string): Promise<BaseResponse<Kanban>> {
+  async remove(id: Types.ObjectId): Promise<BaseResponse<Kanban>> {
     const deleted = await this.kanbanModel.findByIdAndDelete(id).exec();
     if (!deleted) {
       throw new NotFoundException('Kanban no encontrado');

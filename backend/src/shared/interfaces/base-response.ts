@@ -10,3 +10,9 @@ export interface BaseResponse<T extends object> {
 export interface AuthResponse extends BaseResponse<{ accessToken?: string }> {
   refreshToken?: string;
 }
+
+export interface WSBaseResponse<T extends object | null> {
+  data: T;
+  message?: string;
+  roomName?: string;
+}

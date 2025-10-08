@@ -46,7 +46,7 @@ export class UsersService {
   }
 
   async findById(id: string): Promise<BaseResponse<UserDto>> {
-    const user = await this.userModel.findById(id);
+    const user = await this.userModel.findById(id).lean();
 
     if (!user) {
       throw new NotFoundException('No se encontro el usuario');

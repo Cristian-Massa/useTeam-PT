@@ -13,15 +13,17 @@ import { UpdateKanbanDto } from '@app/kanban/dto/update-kanban.dto';
 import { FindKanbanDto } from '@app/kanban/dto/find-kanban.dto';
 import { DeleteKanbanDto } from '@app/kanban/dto/delete-kanban.dto';
 import { BaseKanbanDto } from '@app/kanban/dto/base-kanban.dto';
+import { UserId } from '@app/shared/decorators/user-id.decorator';
+import { ParseObjectIdPipe } from '@nestjs/mongoose';
+import { Types } from 'mongoose';
 
 @Controller('kanban')
 export class KanbanController {
   constructor(private readonly kanbanService: KanbanService) {}
 
   @Post()
-  create(@Body() createKanbanDto: CreateKanbanDto) {
-    console.log(createKanbanDto);
-    return this.kanbanService.create(createKanbanDto);
+  create(@Body() createKanbanDto: CreateKanbanDto, @UserId() userId: string) {
+    return this.kanbanService.create(createKanbanDto, userId);
   }
 
   @Get()
@@ -34,16 +36,8 @@ export class KanbanController {
     return this.kanbanService.findOne(id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') { id }: UpdateKanbanDto,
-    @Body() updateKanbanDto: BaseKanbanDto,
-  ) {
-    return this.kanbanService.update(id, updateKanbanDto);
-  }
-
   @Delete(':id')
-  remove(@Param('id') { id }: DeleteKanbanDto) {
+  remove(@Param('id', ParseObjectIdPipe) id: Types.ObjectId) {
     return this.kanbanService.remove(id);
   }
 }

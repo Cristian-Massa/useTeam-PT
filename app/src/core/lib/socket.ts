@@ -1,19 +1,24 @@
 import { io, Socket } from "socket.io-client";
 
-const BASE_URL = process.env.NEXT_PUBLIC_WS_URL;
+const BASE_URL = "http://localhost:8080";
 
-export const initSocket = () => {
-  return io(BASE_URL);
+let socket: Socket | null = null;
+
+export const initSocket = (): Socket => {
+  if (!socket) {
+    socket = io(BASE_URL, {
+      autoConnect: false, //
+      withCredentials: true,
+      transports: ["websocket"],
+    });
+  }
+  return socket;
 };
 
-export const disconnectSocket = (io: Socket) => {
-  if (!io.disconnected) {
-    io.disconnect();
-  }
+export const connectSocket = (socket: Socket) => {
+  if (!socket.connected) socket.connect();
 };
 
-export const connectSocket = (io: Socket) => {
-  if (!io.connected) {
-    io.connect();
-  }
+export const disconnectSocket = (socket: Socket) => {
+  if (socket.connected) socket.disconnect();
 };

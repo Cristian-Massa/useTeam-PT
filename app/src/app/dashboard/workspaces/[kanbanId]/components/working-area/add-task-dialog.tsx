@@ -1,4 +1,4 @@
-import { AddTaskContent } from "@/app/dashboard/workspaces/[kanbanId]/components/add-task-dialog/add-task-content";
+import { AddTaskContent } from "@/app/dashboard/workspaces/[kanbanId]/components/working-area/add-task-dialog/add-task-content";
 import { Button } from "@/core/components/ui/button";
 import {
   Dialog,
@@ -7,7 +7,11 @@ import {
 } from "@/core/components/ui/dialog";
 import { Plus } from "lucide-react";
 
-export const AddTaskDialog = () => {
+interface AddTaskDialogProps {
+  columnId: string;
+}
+
+export const AddTaskDialog = ({ columnId }: AddTaskDialogProps) => {
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -20,7 +24,7 @@ export const AddTaskDialog = () => {
         </Button>
       </DialogTrigger>
       <DialogContent>
-        <AddTaskContent />
+        <AddTaskContent columnId={columnId} />
       </DialogContent>
     </Dialog>
   );

@@ -6,78 +6,116 @@ import {
   Injectable,
   Logger,
 } from '@nestjs/common';
-import { MongoServerError } from 'mongodb';
 import { Response } from 'express';
+import mongoose from 'mongoose';
+import { MongoServerError } from 'mongodb';
 
-interface MongoErrorInfo {
-  message: string;
+interface ErrorHandler {
   status: number;
+  message: string | ((error: any) => string);
 }
 
 @Injectable()
-@Catch(MongoServerError)
+@Catch(MongoServerError, mongoose.Error)
 export class MongoExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(MongoExceptionFilter.name);
 
-  // 🔍 Mapa de códigos de error → mensaje + status HTTP
-  private readonly errorMap: Record<number, MongoErrorInfo> = {
-    11000: {
-      message: 'El registro ya existe (violación de clave única).',
-      status: HttpStatus.CONFLICT, // 409
-    },
-    121: {
-      message: 'El documento no cumple las reglas de validación del esquema.',
-      status: HttpStatus.UNPROCESSABLE_ENTITY, // 422
-    },
-    8000: {
-      message: 'Error de autenticación con la base de datos.',
-      status: HttpStatus.UNAUTHORIZED, // 401
-    },
-    2: {
-      message: 'Error genérico de sintaxis o comando en MongoDB.',
-      status: HttpStatus.BAD_REQUEST,
-    },
-    9: {
-      message: 'Error de bloqueo o concurrencia en la base de datos.',
-      status: HttpStatus.CONFLICT,
-    },
-    26: {
-      message: 'La colección o base de datos no existe.',
-      status: HttpStatus.NOT_FOUND,
-    },
-    50: {
-      message: 'Operación abortada o interrumpida.',
-      status: HttpStatus.REQUEST_TIMEOUT,
-    },
-    59: {
-      message: 'Error de lectura o escritura en la base de datos.',
-      status: HttpStatus.INTERNAL_SERVER_ERROR,
-    },
-    91: {
-      message: 'El servidor MongoDB no está disponible o no acepta conexiones.',
-      status: HttpStatus.SERVICE_UNAVAILABLE,
-    },
-  };
+  private readonly errorHandlers = new Map<Function, ErrorHandler>([
+    [
+      mongoose.Error.ValidationError,
+      {
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Validación de esquema fallida.',
+      },
+    ],
+    [
+      mongoose.Error.CastError,
+      {
+        status: HttpStatus.BAD_REQUEST,
+        message: 'Identificador o tipo de dato inválido.',
+      },
+    ],
+    [
+      mongoose.Error.DocumentNotFoundError,
+      {
+        status: HttpStatus.NOT_FOUND,
+        message: 'Documento no encontrado.',
+      },
+    ],
+    [
+      mongoose.Error.MissingSchemaError,
+      {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: 'Esquema de Mongoose no registrado.',
+      },
+    ],
+    [
+      mongoose.Error.ParallelSaveError,
+      {
+        status: HttpStatus.CONFLICT,
+        message: 'Conflicto al guardar el documento (paralelismo).',
+      },
+    ],
+    [
+      mongoose.Error.ValidatorError,
+      {
+        status: HttpStatus.BAD_REQUEST,
+        message: (err) => `Error de validación en campo: ${err.path}`,
+      },
+    ],
+    [
+      MongoServerError,
+      {
+        status: HttpStatus.INTERNAL_SERVER_ERROR,
+        message: (err) => this.resolveMongoCodeMessage(err.code),
+      },
+    ],
+  ]);
 
-  catch(exception: MongoServerError, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    const code = exception.code ?? 0;
-    const mappedError = this.errorMap[code];
+    const handler = [...this.errorHandlers.entries()].find(
+      ([type]) => exception instanceof type,
+    );
 
-    const message =
-      mappedError?.message || 'Error desconocido en la base de datos.';
-    const status = mappedError?.status || HttpStatus.INTERNAL_SERVER_ERROR;
+    let status = HttpStatus.INTERNAL_SERVER_ERROR;
+    let message = 'Error desconocido en la base de datos.';
 
-    this.logger.error(`MongoError [${code}]: ${exception.message}`);
+    if (handler) {
+      const [_, info] = handler;
+      status = info.status;
+      message =
+        typeof info.message === 'function'
+          ? info.message(exception)
+          : info.message;
+    }
+
+    const code = exception?.code ?? 0;
+
+    this.logger.error(
+      `MongoDB Error (${exception.name}): ${exception.message}`,
+      exception.stack,
+    );
 
     response.status(status).json({
       statusCode: status,
-      error: 'DatabaseError',
+      error: exception.name || 'DatabaseError',
       message,
       code,
       timestamp: new Date().toISOString(),
     });
+  }
+
+  private resolveMongoCodeMessage(code: number): string {
+    const mongoErrorMap: Record<number, string> = {
+      11000: 'Registro duplicado (clave única).',
+      121: 'Violación de validación de esquema.',
+      26: 'Colección o base de datos inexistente.',
+      50: 'Operación abortada o interrumpida.',
+    };
+
+    return mongoErrorMap[code] || 'Error en el servidor de MongoDB.';
   }
 }

@@ -1,23 +1,23 @@
 "use client";
 
 import { useGetKanbans } from "@/app/dashboard/workspaces/components/hooks/queries/useGetKanbans";
+import { KanbanCard } from "@/app/dashboard/workspaces/components/kanban-list/kanban-card";
 import { KanbanCreateDialog } from "@/app/dashboard/workspaces/components/kanban-list/kanban-create-dialog";
 import { Button } from "@/core/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/core/components/ui/card";
-import { LoaderPulse } from "@/core/components/ui/loader";
-import Link from "next/link";
+
+import { Loader } from "@/core/components/ui/loader";
 
 export const KanbanList = () => {
   const { kanbans, isPending, refetch } = useGetKanbans();
+
   if (isPending) {
-    <LoaderPulse />;
+    return (
+      <div className="h-full flex flex-col justify-center items-center">
+        <Loader />
+        <p>Cargando Kanbans</p>
+      </div>
+    );
   }
-  console.log(kanbans);
   return (
     <div>
       <div className="mb-4 flex justify-end gap-2">
@@ -29,19 +29,7 @@ export const KanbanList = () => {
           <p className="mb-4 text-lg">No hay kanbans disponibles.</p>
         </div>
       ) : (
-        kanbans.map((kanban) => (
-          <Card key={kanban._id}>
-            <CardHeader>
-              <CardTitle>{kanban.name}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>{kanban.description}</p>
-              <Link href={`/dashboard/workspaces/${kanban._id}`}>
-                <Button>Acceder</Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ))
+        kanbans.map((kanban) => <KanbanCard key={kanban._id} kanban={kanban} />)
       )}
     </div>
   );

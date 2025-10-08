@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import mongoose, { HydratedDocument, Types } from 'mongoose';
 
 type TasksDocument = HydratedDocument<Tasks>;
 
@@ -13,8 +13,17 @@ export class Tasks {
   @Prop()
   description?: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Tasks', default: [] })
-  tasks: Types.ObjectId[];
+  @Prop()
+  comments: string[];
+
+  @Prop()
+  priority: string;
+
+  @Prop()
+  assignedTo: string;
+
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: 'Columns' })
+  column: Types.ObjectId;
 }
 
 export const TaksSchema = SchemaFactory.createForClass(Tasks);

@@ -1,5 +1,6 @@
 import { HttpException } from "@/core/exceptions/http-exception";
 import { BaseResponse } from "@/core/interfaces/base-response";
+import { getAuthHeaders } from "@/core/lib/get-auth-header";
 import { httpNotificationEmitter } from "@/core/lib/http-notification-observer";
 import { Methods } from "@/core/types/methods";
 
@@ -11,15 +12,15 @@ interface ApiOptionsProps {
 }
 export const api = async <T extends object>(
   url: string,
-  options: ApiOptionsProps,
-  headers?: Record<string, string>
+  options: ApiOptionsProps
 ): Promise<BaseResponse<T> | null> => {
   try {
+    const authorization = getAuthHeaders();
     const response = await fetch(`${BASE_URL}${url}`, {
       method: options.method,
       body: options.body ? JSON.stringify(options.body) : undefined,
       headers: {
-        ...headers,
+        ...(authorization ? { Authorization: authorization } : {}),
         "Content-Type": "application/json",
       },
       credentials: "include",

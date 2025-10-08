@@ -2,37 +2,51 @@ import {
   WebSocketGateway,
   SubscribeMessage,
   MessageBody,
+  WebSocketServer,
 } from '@nestjs/websockets';
 import { TasksService } from '@app/tasks/services/tasks.service';
 import { CreateTaskDto } from '@app/tasks/dto/create-task.dto';
 import { UpdateTaskDto } from '@app/tasks/dto/update-task.dto';
+import { Server } from 'socket.io';
 
 @WebSocketGateway()
 export class TasksGateway {
   constructor(private readonly tasksService: TasksService) {}
+  @WebSocketServer()
+  server: Server;
 
-  @SubscribeMessage('createTask')
-  create(@MessageBody() createTaskDto: CreateTaskDto) {
-    return this.tasksService.create(createTaskDto);
+  @SubscribeMessage('create-task')
+  async create(
+    @MessageBody()
+    { data, roomName }: { data: CreateTaskDto; roomName: string },
+  ) {
+    const task = await this.tasksService.create(data);
+
+    this.server.to(roomName).emit('revalidate-tasks', task);
   }
 
-  @SubscribeMessage('findAllTasks')
-  findAll() {
-    return this.tasksService.findAll();
+  @SubscribeMessage('change-column-task')
+  async changeTaskColumn(
+    @MessageBody('')
+    {
+      data,
+      roomName,
+    }: {
+      data: { taskId: string; overColumnId: string };
+      roomName: string;
+    },
+  ) {
+    const task = await this.tasksService.changeTaskColumn(data);
+    this.server.to(roomName).emit('revalidate-tasks', task);
   }
 
-  @SubscribeMessage('findOneTask')
-  findOne(@MessageBody() id: number) {
-    return this.tasksService.findOne(id);
-  }
+  // @SubscribeMessage('update-task')
+  // update(@MessageBody() updateTaskDto: UpdateTaskDto) {
+  //   return this.tasksService.update(updateTaskDto.id, updateTaskDto);
+  // }
 
-  @SubscribeMessage('updateTask')
-  update(@MessageBody() updateTaskDto: UpdateTaskDto) {
-    return this.tasksService.update(updateTaskDto.id, updateTaskDto);
-  }
-
-  @SubscribeMessage('removeTask')
-  remove(@MessageBody() id: number) {
-    return this.tasksService.remove(id);
-  }
+  // @SubscribeMessage('remove-task')
+  // remove(@MessageBody() id: number) {
+  //   return this.tasksService.remove(id);
+  // }
 }

@@ -1,4 +1,4 @@
-import { Column } from "@/app/dashboard/workspaces/[kanbanId]/interfaces/column";
+import { Column } from "@/core/interfaces/columns";
 
 const reorderArray = <T>(arr: T[], from: number, to: number): T[] => {
   const newArr = [...arr];
@@ -14,8 +14,8 @@ export const handleColumnDrag = (
   columns: Column[],
   setColumns: (cols: Column[]) => void
 ) => {
-  const oldIndex = columns.findIndex((c) => c.id === activeId);
-  const newIndex = columns.findIndex((c) => c.id === overId);
+  const oldIndex = columns.findIndex((c) => c._id === activeId);
+  const newIndex = columns.findIndex((c) => c._id === overId);
   if (oldIndex === -1 || newIndex === -1 || oldIndex === newIndex) return;
 
   setColumns(reorderArray(columns, oldIndex, newIndex));
@@ -33,8 +33,8 @@ export const handleTaskDrag = (
   let toColIndex = -1;
 
   columns.forEach((col, idx) => {
-    if (col.tasks.some((t) => t.id === activeId)) fromColIndex = idx;
-    if (col.id === overId || col.tasks.some((t) => t.id === overId))
+    if (col.tasks.some((t) => t._id === activeId)) fromColIndex = idx;
+    if (col._id === overId || col.tasks.some((t) => t._id === overId))
       toColIndex = idx;
   });
 
@@ -46,10 +46,10 @@ export const handleTaskDrag = (
   const movedTask = fromCol.tasks[arrayPos];
   let toTaskIndex: number;
   if (fromColIndex === toColIndex) {
-    const overIndex = toCol.tasks.findIndex((t) => t.id === overId);
+    const overIndex = toCol.tasks.findIndex((t) => t._id === overId);
     toTaskIndex = overIndex !== -1 ? overIndex : toCol.tasks.length;
   } else {
-    const overIndex = toCol.tasks.findIndex((t) => t.id === overId);
+    const overIndex = toCol.tasks.findIndex((t) => t._id === overId);
     if (overIndex !== -1) {
       toTaskIndex = overIndex;
     } else {

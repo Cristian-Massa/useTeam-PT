@@ -53,7 +53,6 @@ export class AuthService {
       password: true,
     });
     if (!user.password) {
-      console.log(user.password, 'password');
       throw new InternalServerErrorException(
         'Error desconocido al obtener la contrasña',
       );
@@ -130,7 +129,7 @@ export class AuthService {
 
     return this.jwtService.sign(payload, {
       secret: process.env.JWT_ACCESS_SECRET,
-      expiresIn: '5m',
+      expiresIn: '1d',
     });
   }
 

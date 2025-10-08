@@ -22,7 +22,7 @@ export const Droppable = ({
 
   const { setNodeRef, isOver } = useDroppable({
     id: columnId,
-    data: { type },
+    data: { type, columnId },
   });
 
   return (

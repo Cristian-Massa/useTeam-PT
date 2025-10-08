@@ -1,6 +1,7 @@
 import { Button } from "@/core/components/ui/button";
 import { cn } from "@/core/lib/utils";
 import { CheckSquare, LayoutDashboard, Settings, Users } from "lucide-react";
+import Link from "next/link";
 
 interface SideBarProps {
   sidebarOpen: boolean;
@@ -32,14 +33,14 @@ export const SideBar = ({ sidebarOpen }: SideBarProps) => {
     <aside
       className={cn(
         "fixed left-0 top-16 z-40 h-[calc(100vh-4rem)] w-64 border-r border-border bg-card transition-transform duration-300 ease-in-out",
-        sidebarOpen ? "translate-x-0" : "-translate-x-full"
+        sidebarOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
       )}
     >
       <nav className="flex flex-col gap-1 p-4">
         {navigation.map((item) => {
           const Icon = item.icon;
           return (
-            <a
+            <Link
               key={item.name}
               href={item.href}
               className={cn(
@@ -51,7 +52,7 @@ export const SideBar = ({ sidebarOpen }: SideBarProps) => {
             >
               <Icon className="h-5 w-5" />
               {item.name}
-            </a>
+            </Link>
           );
         })}
       </nav>

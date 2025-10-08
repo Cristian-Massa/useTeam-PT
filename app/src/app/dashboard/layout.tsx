@@ -12,7 +12,11 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
   return (
-    <div className="min-h-screen bg-background">
+    <div
+      className="8
+DK
+Create component librarybg-background"
+    >
       {/* Header */}
       <Header sidebarOpen={sidebarOpen} setSidebarOpen={setSidebarOpen} />
       {/* Sidebar */}
@@ -20,8 +24,8 @@ const DashboardLayout = ({ children }: PropsWithChildren) => {
       {/* Main Content */}
       <main
         className={cn(
-          "pt-16 transition-all duration-300 ease-in-out m-10",
-          sidebarOpen ? "lg:pl-64" : "pl-0"
+          "h-[calc(100vh-10rem)] transition-all duration-300 ease-in-out m-10",
+          sidebarOpen ? "lg:pl-64" : "pl-0 lg:pl-64"
         )}
       >
         {children}

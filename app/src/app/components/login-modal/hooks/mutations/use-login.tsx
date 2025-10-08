@@ -15,7 +15,6 @@ export const useLogin = () => {
       return response?.data ?? null;
     },
     onSuccess: (data) => {
-      console.log(data);
       if (!data) return;
       handleUser(data.accessToken);
     },

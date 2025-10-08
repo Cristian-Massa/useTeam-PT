@@ -9,7 +9,3 @@ export interface GetKanban extends BaseKanban {
   createdAt: string;
   updatedAt: string;
 }
-
-export interface PostKanban extends BaseKanban {
-  password: string;
-}
